@@ -43,7 +43,7 @@ def get_vector_and_max_distance(body: dict):
 
 @app.function_name(name="Match")
 @app.route(route="match")
-def match_with_vector(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
+def match(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
     body = req.get_json()
 
