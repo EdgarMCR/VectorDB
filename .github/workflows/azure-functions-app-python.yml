@@ -19,9 +19,7 @@
 name: Deploy Python project to Azure Function App
 
 on:
-  push:
-    branches:
-    - ["main"]
+  [push]
 
 env:
   AZURE_FUNCTIONAPP_NAME: 'polygeist-matcher-fa'   # set this to your function app name on Azure
