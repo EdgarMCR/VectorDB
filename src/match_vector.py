@@ -23,21 +23,24 @@ def maybe_load_model():
     return MODEL, DF
 
 
-def get_matching_vectors(vector: np.ndarray, k: int):
+def get_matching_vectors(vector: np.ndarray, k: int, with_vector: bool = False):
     """ Return the k closest vectors """
     index, df = maybe_load_model()
     distances, indices = index.search(vector, k)
     matches = []
     for index_ in range(len(indices[0])):
         ii = indices[0][index_]
-        vec = util.load_vector(ii)
+
         result = {
-            VEC: vec,
             NAME: df['Name'].iloc[ii],
             CONF: df['Confidence'].iloc[ii],
             DIST: distances[0][index_],  # We should be able to reconstruct the vectors using `reconstruct`
             IND: ii
         }
+        if with_vector:
+            vec = util.load_vector(ii)
+            result[VEC] = vec
+
         matches.append(result)
     return matches
 

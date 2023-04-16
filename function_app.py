@@ -17,30 +17,56 @@ def test_function(req: func.HttpRequest) -> func.HttpResponse:
     return func.HttpResponse('{"status": "ok"}', mimetype=APP_JSON, status_code=200)
 
 
-@app.function_name(name="Diagnostic")
-@app.route(route="diagnostic")
-def test_function(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
-    body = req.get_json()
-
+def get_vector_and_max_distance(body: dict):
+    err_msg, max_distance, vector = '', None, None
     if not 'max-distance' in body:
-        return func.HttpResponse('{"msg": "No key `max-distance` in JSON"}', mimetype=APP_JSON, status_code=400)
+        return "No key `max-distance` in JSON", max_distance, vector
+
     max_distance = body['max-distance']
     try:
         max_distance = float(max_distance)
     except Exception:
-        return func.HttpResponse('{"msg": "`max-distance` not a float"}', mimetype=APP_JSON, status_code=400)
+        return "`max-distance` not a float", max_distance, vector
 
     if not 'vector' in body:
-        return func.HttpResponse('{"msg": "No key `vector` in JSON"}', mimetype=APP_JSON, status_code=400)
+        return "No key `vector` in JSON", max_distance, vector
 
     vector = body['vector']
     if len(vector) != 512:
-        return func.HttpResponse('{"msg": "Vector length is not 512"}', mimetype=APP_JSON, status_code=400)
+        return "Vector length is not 512", max_distance, vector
 
     for x in vector:
         if not isinstance(x, float):
-            return func.HttpResponse('{"msg": "Vector should only contain floats"}', mimetype=APP_JSON, status_code=400)
+            return "Vector should only contain floats", max_distance, vector
+    return err_msg, max_distance, vector
+
+
+@app.function_name(name="Match")
+@app.route(route="match")
+def match_with_vector(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    body = req.get_json()
+
+    err_msg, max_distance, vector = get_vector_and_max_distance(body)
+
+    if err_msg:
+        return func.HttpResponse('{"msg": "' + err_msg + '"}', mimetype=APP_JSON, status_code=400)
+
+    results = mv.get_all_matches_within_distance(vector, max_distance, False)
+
+    return func.HttpResponse(json.dumps(results), mimetype=APP_JSON, status_code=200)
+
+
+@app.function_name(name="MatchWithVectors")
+@app.route(route="match-with-vectors")
+def match_with_vector(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
+    logging.info('Python HTTP trigger function processed a request.')
+    body = req.get_json()
+
+    err_msg, max_distance, vector = get_vector_and_max_distance(body)
+
+    if err_msg:
+        return func.HttpResponse('{"msg": "' + err_msg + '"}', mimetype=APP_JSON, status_code=400)
 
     results = mv.get_all_matches_within_distance(vector, max_distance)
 

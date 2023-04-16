@@ -138,6 +138,10 @@ def load_vector(index: int):
     Used for easy of development and work-around for cases when `index.reconstruct` errors.
     For production system, figure our the bug or save vectors in a DB. This would double as a handy store for training
     data.
+
+    This stackoverflow question suggests that it is because we use pip instead of conda to install. However,
+    I have to use pip as I am deploying to Azure Function
+    https://stackoverflow.com/questions/70624600/faiss-how-to-retrieve-vector-by-id-from-python
     """
     if index < 0 or 70300 < index:
         logging.error("Index `{}` is out of range".format(index))
