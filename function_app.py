@@ -42,11 +42,14 @@ def get_vector_and_max_distance(body: dict):
 
 
 @app.function_name(name="Match")
-@app.route(route="match")
-def match(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
+@app.route(route="match", methods=[func.HttpMethod.GET])
+def match(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    body = req.get_json()
-
+    try:
+        body = req.get_json()
+    except ValueError:
+        return func.HttpResponse('{"msg": "HTTP request does not contain valid JSON data"}', mimetype=APP_JSON, status_code=400)
+    
     err_msg, max_distance, vector = get_vector_and_max_distance(body)
 
     if err_msg:
@@ -58,16 +61,19 @@ def match(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResp
 
 
 @app.function_name(name="MatchWithVectors")
-@app.route(route="match-with-vectors")
-def match_with_vector(req: func.HttpRequest, methods=[func.HttpMethod.GET]) -> func.HttpResponse:
+@app.route(route="match-with-vectors", methods=[func.HttpMethod.GET])
+def match_with_vector(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
-    body = req.get_json()
+    try:
+        body = req.get_json()
+    except ValueError:
+        return func.HttpResponse('{"msg": "HTTP request does not contain valid JSON data"}', mimetype=APP_JSON, status_code=400)
 
     err_msg, max_distance, vector = get_vector_and_max_distance(body)
 
     if err_msg:
         return func.HttpResponse('{"msg": "' + err_msg + '"}', mimetype=APP_JSON, status_code=400)
 
-    results = mv.get_all_matches_within_distance(vector, max_distance)
+    results = mv.get_all_matches_within_distance(vector, max_distance, True)
 
     return func.HttpResponse(json.dumps(results), mimetype=APP_JSON, status_code=200)

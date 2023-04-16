@@ -48,8 +48,9 @@ def main():
     print(f"{np.min(flattened)=}, {np.max(flattened)=}")
     vec1 = np.reshape(vecs[0], (1, -1))
     vec1[0, 0] = 0.06
+    print(vec1)
     # and now we can search
-    results = mv.get_all_matches_within_distance(vec1, 0.3)
+    results = mv.get_all_matches_within_distance(vec1, 0.3, True)
     keys = [mv.NAME, mv.CONF, mv.DIST, mv.IND]
     for rslt in results:
         for k in keys:
