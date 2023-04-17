@@ -41,14 +41,8 @@ def train_and_save_model():
 def main():
     # train_and_save_model()
 
-    df = util.load_data()
-    vecs = util.get_vectors(df)
-    print(f"{np.min(vecs)=}, {np.max(vecs)=}")
-    flattened = np.ravel(vecs)
-    print(f"{np.min(flattened)=}, {np.max(flattened)=}")
-    vec1 = np.reshape(vecs[0], (1, -1))
-    vec1[0, 0] = 0.06
-    print(vec1)
+    vec1 = util.load_vector(0)
+
     # and now we can search
     results = mv.get_all_matches_within_distance(vec1, 0.3, True)
     keys = [mv.NAME, mv.CONF, mv.DIST, mv.IND]
