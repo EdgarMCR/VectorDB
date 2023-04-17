@@ -26,6 +26,8 @@ def maybe_load_model():
 
 def get_matching_vectors(vector: np.ndarray, k: int, with_vector: bool = False):
     """ Return the k closest vectors """
+    vector = np.array(vector).astype(np.float32)
+
     index, df = maybe_load_model()
     distances, indices = index.search(vector, k)
     matches = []
