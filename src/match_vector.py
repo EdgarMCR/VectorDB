@@ -48,7 +48,7 @@ def get_matching_vectors(vector: np.ndarray, k: int, with_vector: bool = False):
     return matches
 
 
-def get_all_matches_within_distance(vector: list, max_distance: float, with_vector: bool = False) -> dict:
+def get_all_matches_within_distance(vector: list, max_distance: float, min_confidence: float, with_vector: bool = False) -> dict:
     """ We want to identify all matches within distance `max_distance`.
 
     Here we use an exhaustive search but stop if we exceed 128 results for performance reasons.
@@ -58,6 +58,7 @@ def get_all_matches_within_distance(vector: list, max_distance: float, with_vect
     for k in ks:
         results = get_matching_vectors(vector, k, with_vector)
         filtered = [x for x in results if x[DIST] < max_distance]
+        filtered = [x for x in results if x[CONF] > min_confidence]
         if len(filtered) < k:
             # Stop searching once we have identified a vector that is further away
             break
