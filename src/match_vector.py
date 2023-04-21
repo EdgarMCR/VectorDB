@@ -58,7 +58,7 @@ def get_all_matches_within_distance(vector: list, max_distance: float, min_confi
     for k in ks:
         results = get_matching_vectors(vector, k, with_vector)
         filtered = [x for x in results if x[DIST] < max_distance]
-        filtered = [x for x in results if x[CONF] > min_confidence]
+        filtered = [x for x in filtered if x[CONF] > min_confidence]
         if len(filtered) < k:
             # Stop searching once we have identified a vector that is further away
             break
